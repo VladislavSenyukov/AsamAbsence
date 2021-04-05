@@ -28,7 +28,7 @@ struct CalendarMonthData {
     let days: Int
 }
 
-struct CalendarDate {
+struct CalendarDate: Hashable {
     let year: Int
     let month: Int
     let day: Int
@@ -47,6 +47,7 @@ struct CalendarCellItemData {
 
     let type: CellType
     var isSelected: Bool
+    var absenseType: AbsenseType?
 }
 
 struct ScheduleData {

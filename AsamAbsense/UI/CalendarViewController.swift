@@ -12,6 +12,7 @@ class CalendarViewController: LoadableViewController {
     @IBOutlet private weak var scheduleButton: UIButton!
     @IBOutlet private weak var scheduleButtonTopConstraint: NSLayoutConstraint!
     private lazy var viewModel: CalendarViewModel = AsamAbsenseApp.shared.makeCalendarModel()
+    private var firstShow = true
     private var isLoaded = false
     
     override func viewDidLoad() {
@@ -25,12 +26,16 @@ class CalendarViewController: LoadableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard !isLoaded else {
-            return
+        if firstShow {
+            collectionView.scrollToItem(at: viewModel.todayIndexPath,
+                                        at: .centeredVertically,
+                                        animated: false)
+            firstShow = false
         }
-        isLoaded = true
-        collectionView.scrollToItem(at: viewModel.todayIndexPath, at: .centeredVertically, animated: false)
-        viewModel.fetchAbsenseData()
+        if !isLoaded {
+            reload()
+            isLoaded = true
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -56,6 +61,19 @@ private extension CalendarViewController {
         scheduleVC.updateScheduleWithDates(viewModel.selectedCalendarDates())
         navigationController?.pushViewController(scheduleVC, animated: true)
     }
+    
+    func showEditForAbsense(_ absense: Absense) {
+        guard let scheduleVC = AsamAbsenseApp.shared.makeScheduleVC() else {
+            return
+        }
+        scheduleVC.delegate = self
+        scheduleVC.updateForEditingAbsense(absense)
+        navigationController?.pushViewController(scheduleVC, animated: true)
+    }
+    
+    func removeDayFromAbsense(_ absense: Absense, indexPath: IndexPath) {
+        viewModel.removeDayWithIndexPath(indexPath, from: absense)
+    }
 }
 
 extension CalendarViewController: CalendarViewModelDelegate {
@@ -63,9 +81,9 @@ extension CalendarViewController: CalendarViewModelDelegate {
         showLoading(isLoading, completion: nil)
     }
     
-    func showFetchedAbsenceData(_ absenceData: [Absense]) {
+    func showFetchedAbsenceData() {
         collectionView.isHidden = false
-        print("data loaded")
+        collectionView.reloadData()
     }
     
     func showScheduleButton(_ isShown: Bool) {
@@ -74,6 +92,10 @@ extension CalendarViewController: CalendarViewModelDelegate {
             self.scheduleButtonTopConstraint.constant = isShown ? 100 : 0
             self.view.layoutIfNeeded()
         }, completion: { _ in} )
+    }
+    
+    func reload() {
+        viewModel.fetchAbsenseData()
     }
 }
 
@@ -89,12 +111,13 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CalendarDayCell", for: indexPath) as! CalendarDayCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CalendarDayCell.identifier, for: indexPath) as! CalendarDayCell
         let data = viewModel.cellItemDataForIndexPath(indexPath)
         let cellData = CalendarCellViewData(type: data.type,
                                             isSelected: data.isSelected,
                                             dayIndex: indexPath.item,
-                                            isToday: indexPath == viewModel.todayIndexPath)
+                                            isToday: indexPath == viewModel.todayIndexPath,
+                                            absenseType: data.absenseType)
         cell.configureWithData(cellData)
         return cell
     }
@@ -105,8 +128,26 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.toggleSelectionAtIndexPath(indexPath)
-        collectionView.reloadItems(at: [indexPath])
+        if let absenseData = viewModel.absenseDataForIndexPath(indexPath) {
+            let alert = UIAlertController(title: "Select action", message: nil, preferredStyle: .actionSheet)
+            let handler: (UIAlertAction) -> Void = { [weak alert, weak self] action in
+                guard let actionIndex = alert?.actions.firstIndex(of: action) else {
+                    return
+                }
+                if actionIndex == 0 {
+                    self?.removeDayFromAbsense(absenseData, indexPath: indexPath)
+                } else if actionIndex == 1 {
+                    self?.showEditForAbsense(absenseData)
+                }
+            }
+            alert.addAction(UIAlertAction(title: "Remove this day", style: .default, handler: handler))
+            alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: handler))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
+        } else {
+            viewModel.toggleSelectionAtIndexPath(indexPath)
+            collectionView.reloadItems(at: [indexPath])
+        }
     }
 }
 
@@ -120,7 +161,14 @@ extension CalendarViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension CalendarViewController: ScheduleViewControllerDelegate {
-    func didScheduleAbsense() {
+    func didCreateAbsense() {
+        viewModel.resetSelection()
+        showScheduleButton(false)
+        collectionView.reloadData()
+        isLoaded = false
+    }
+    
+    func didUpdateAbsense() {
         viewModel.resetSelection()
         showScheduleButton(false)
         collectionView.reloadData()

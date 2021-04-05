@@ -9,8 +9,9 @@ import Foundation
 
 protocol CalendarViewModelDelegate: AnyObject {
     func showLoading(_ isLoading: Bool)
-    func showFetchedAbsenceData(_ absenceData: [Absense])
+    func showFetchedAbsenceData()
     func showScheduleButton(_ isShown: Bool)
+    func reload()
 }
 
 class CalendarViewModel {
@@ -37,6 +38,7 @@ class CalendarViewModel {
     }()
     private lazy var calendarDataItemCache: [IndexPath: CalendarCellItemData] = [:]
     private lazy var selectedIndexPaths = Set<IndexPath>()
+    private var absenseMap: [CalendarDate: Absense] = [:]
     lazy var todayIndexPath: IndexPath = {
         let daysFromStartOfYear = additionalDays + Date().dayIndex - 1
         let section = daysFromStartOfYear / 7
@@ -54,12 +56,18 @@ class CalendarViewModel {
     }
     
     func fetchAbsenseData() {
-        calendarDataItemCache = [:]
         delegate?.showLoading(true)
-        absenceManager.fetchAbsenseData { [weak self] absenceData in
+        absenceManager.fetchAbsenseData { [weak self] absenseData in
+            self?.absenseMap = absenseData.reduce([:]) { (result, absense) in
+                let next = absense.dates
+                    .reduce(into: [CalendarDate: Absense]()) { $0[$1] = absense }
+                return result.merging(next,
+                                      uniquingKeysWith: { (_, new) in new })
+            }
+            self?.calendarDataItemCache = [:]
             DispatchQueue.main.async {
                 self?.delegate?.showLoading(false)
-                self?.delegate?.showFetchedAbsenceData(absenceData)
+                self?.delegate?.showFetchedAbsenceData()
             }
         }
     }
@@ -79,7 +87,9 @@ class CalendarViewModel {
             let cellItemDate = CalendarDate(year: monthData.year,
                                             month: monthData.month,
                                             day: day)
-            dataItem = CalendarCellItemData(type: .date(cellItemDate), isSelected: false)
+            dataItem = CalendarCellItemData(type: .date(cellItemDate),
+                                            isSelected: false,
+                                            absenseType: absenseMap[cellItemDate]?.type)
         } else {
             dataItem = CalendarCellItemData(type: .empty, isSelected: false)
         }
@@ -93,10 +103,19 @@ class CalendarViewModel {
         case .empty:
             return false
         case .date(let caledarDate):
-            guard caledarDate.date.isWeekday else {
-                return false
-            }
-            return !absenceManager.hasAbsenseAtDate(caledarDate.date)
+            return
+                caledarDate.date.isWeekday &&
+                caledarDate.date.startOfDay >= Date().startOfDay
+        }
+    }
+    
+    func absenseDataForIndexPath(_ indexPath: IndexPath) -> Absense? {
+        let cellData = cellItemDataForIndexPath(indexPath)
+        switch cellData.type {
+        case .empty:
+            return nil
+        case .date(let caledarDate):
+            return absenseMap[caledarDate]
         }
     }
     
@@ -127,12 +146,24 @@ class CalendarViewModel {
     }
     
     func resetSelection() {
-        selectedIndexPaths = .init()
-        calendarDataItemCache.forEach {
-            if $0.value.isSelected {
-                var itemData = $0.value
-                itemData.isSelected = false
-                calendarDataItemCache[$0.key] = itemData
+        selectedIndexPaths.removeAll()
+        calendarDataItemCache.removeAll()
+    }
+    
+    func removeDayWithIndexPath(_ indexPath: IndexPath, from absense: Absense) {
+        let cellData = cellItemDataForIndexPath(indexPath)
+        guard
+            case .date(let date) = cellData.type,
+            let dateIndex = absense.dates.firstIndex(of: date) else {
+            return
+        }
+        var absense = absense
+        absense.dates.remove(at: dateIndex)
+        delegate?.showLoading(true)
+        absenceManager.updateAbsense(absense) { [weak self] in
+            DispatchQueue.main.async {
+                self?.delegate?.showLoading(false)
+                self?.delegate?.reload()
             }
         }
     }

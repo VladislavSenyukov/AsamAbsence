@@ -15,7 +15,6 @@ protocol AbsenseManagerProtocol {
                        attachments: Set<URL>,
                        completion: @escaping (Absense) -> Void)
     func updateAbsense(_ absense: Absense, completion: @escaping () -> Void)
-    func hasAbsenseAtDate(_ date: Date) -> Bool
 }
 
 class AbsenseManager: AbsenseManagerProtocol {
@@ -74,9 +73,5 @@ class AbsenseManager: AbsenseManagerProtocol {
             self.absenseStorage[userId] = absenseData
             completion()
         }
-    }
-    
-    func hasAbsenseAtDate(_ date: Date) -> Bool {
-        return false
     }
 }

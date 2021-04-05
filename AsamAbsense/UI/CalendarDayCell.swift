@@ -18,6 +18,7 @@ struct CalendarCellViewData {
     let isSelected: Bool
     let dayIndex: Int
     let isToday: Bool
+    let absenseType: AbsenseType?
 }
 
 class CalendarDayCell: UICollectionViewCell {
@@ -54,7 +55,7 @@ class CalendarDayCell: UICollectionViewCell {
             
             let day = calendarDate.day
             var dayText = day.description
-            if day == 1 || data.isToday || data.isSelected {
+            if day == 1 || data.isToday || data.isSelected || data.absenseType != nil {
                 dayText += " \(formatter.string(from: calendarDate.date))"
                 yearLabel.isHidden = false
                 yearLabel.text = calendarDate.year.description
@@ -63,7 +64,7 @@ class CalendarDayCell: UICollectionViewCell {
             }
             dayLabel.text = dayText
             
-            if data.isToday || data.isSelected {
+            if data.isToday || data.isSelected || data.absenseType != nil {
                 dayLabel.textColor = .white
                 yearLabel.textColor = .white
             } else {
@@ -78,8 +79,25 @@ class CalendarDayCell: UICollectionViewCell {
         }
         if data.isSelected {
             contentView.backgroundColor = UIColor(hex: "#307030FF")
+        } else if let absense = data.absenseType {
+            contentView.backgroundColor = absense.color
         } else {
             contentView.backgroundColor = .white
+        }
+    }
+}
+
+private extension AbsenseType {
+    var color: UIColor? {
+        switch self {
+        case .vacation:
+            return UIColor(hex: "#1fe050ff")
+        case .sickLeave:
+            return UIColor(hex: "#e01f42ff")
+        case .workFromHome:
+            return UIColor(hex: "#1f5ce0ff")
+        case .personalDay:
+            return UIColor(hex: "#891fe0ff")
         }
     }
 }

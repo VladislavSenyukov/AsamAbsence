@@ -8,7 +8,8 @@
 import UIKit
 
 protocol ScheduleViewControllerDelegate: AnyObject {
-    func didScheduleAbsense()
+    func didCreateAbsense()
+    func didUpdateAbsense()
 }
 
 class ScheduleViewController: LoadableViewController {
@@ -21,6 +22,7 @@ class ScheduleViewController: LoadableViewController {
     
     weak var delegate: ScheduleViewControllerDelegate?
     private lazy var viewModel = AsamAbsenseApp.shared.makeScheduleModel()
+    private var isEdit = false
     @IBOutlet private weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -35,6 +37,11 @@ class ScheduleViewController: LoadableViewController {
     func updateScheduleWithDates(_ dates: [CalendarDate]) {
         viewModel.updateDates(dates)
     }
+    
+    func updateForEditingAbsense(_ absense: Absense) {
+        isEdit = true
+        viewModel.updateFromAbsense(absense)
+    }
 }
 
 extension ScheduleViewController: ScheduleViewModelDelegate {
@@ -42,9 +49,14 @@ extension ScheduleViewController: ScheduleViewModelDelegate {
         showLoading(isLoading, completion: nil)
     }
     
-    func showScheduledSuccessfully() {
+    func showAbsenseCreated() {
         navigationController?.popViewController(animated: true)
-        delegate?.didScheduleAbsense()
+        delegate?.didCreateAbsense()
+    }
+    
+    func showAbsenseUpdated() {
+        navigationController?.popViewController(animated: true)
+        delegate?.didUpdateAbsense()
     }
 }
 
@@ -103,7 +115,11 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
 
 private extension ScheduleViewController {
     @objc func doneTapped() {
-        viewModel.scheduleAbsense()
+        if isEdit {
+            viewModel.updateAbsense()
+        } else {
+            viewModel.scheduleAbsense()
+        }
     }
 }
 
