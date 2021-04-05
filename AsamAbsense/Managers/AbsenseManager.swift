@@ -10,11 +10,12 @@ import Foundation
 protocol AbsenseManagerProtocol {
     func fetchAbsenseData(completion: @escaping ([Absense]) -> Void)
     func createAbsense(of type: AbsenseType,
-                       intervals: [DateInterval],
+                       dates: [CalendarDate],
                        comment: String?,
                        attachments: Set<URL>,
                        completion: @escaping (Absense) -> Void)
     func updateAbsense(_ absense: Absense, completion: @escaping () -> Void)
+    func hasAbsenseAtDate(_ date: Date) -> Bool
 }
 
 class AbsenseManager: AbsenseManagerProtocol {
@@ -38,16 +39,16 @@ class AbsenseManager: AbsenseManagerProtocol {
     }
     
     func createAbsense(of type: AbsenseType,
-                       intervals: [DateInterval],
+                       dates: [CalendarDate],
                        comment: String?,
                        attachments: Set<URL>,
                        completion: @escaping (Absense) -> Void) {
         DispatchQueue.global().asyncAfter(deadline: .now() + Constants.commonDelay) {
             let absense = Absense(id: UUID().uuidString,
                                   type: type,
-                                  intervals: intervals,
+                                  dates: dates,
                                   comment: comment,
-                                  atachments: attachments)
+                                  attachments: attachments)
             guard let userId = self.userManager.currentUser?.id else {
                 assertionFailure("User logged out!")
                 completion(absense)
@@ -73,5 +74,9 @@ class AbsenseManager: AbsenseManagerProtocol {
             self.absenseStorage[userId] = absenseData
             completion()
         }
+    }
+    
+    func hasAbsenseAtDate(_ date: Date) -> Bool {
+        return false
     }
 }

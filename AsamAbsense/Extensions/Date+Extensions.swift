@@ -61,6 +61,10 @@ extension Date {
         }
         return layout
     }
+    
+    var isWeekday: Bool {
+        return weekdayIndex != 1 && weekdayIndex != 7
+    }
 }
 
 extension DateInterval {

@@ -31,6 +31,9 @@
 		D4C503B9261A7A6A00F507E0 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503B8261A7A6A00F507E0 /* UIColor+Extensions.swift */; };
 		D4C503BC261A8B5100F507E0 /* LoadableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503BB261A8B5100F507E0 /* LoadableViewController.swift */; };
 		D4C503C0261AB58000F507E0 /* CalendarDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503BF261AB58000F507E0 /* CalendarDayCell.swift */; };
+		D4C503C4261B624C00F507E0 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */; };
+		D4C503C7261B6FB400F507E0 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503C6261B6FB400F507E0 /* ScheduleViewModel.swift */; };
+		D4C503CC261B745C00F507E0 /* ScheduleTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +63,9 @@
 		D4C503B8261A7A6A00F507E0 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		D4C503BB261A8B5100F507E0 /* LoadableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableViewController.swift; sourceTree = "<group>"; };
 		D4C503BF261AB58000F507E0 /* CalendarDayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCell.swift; sourceTree = "<group>"; };
+		D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
+		D4C503C6261B6FB400F507E0 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTitleCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +131,8 @@
 				D4B8C6EC261A3728009B470A /* MenuViewController.swift */,
 				D4B8C6EF261A3753009B470A /* CalendarViewController.swift */,
 				D4C503BF261AB58000F507E0 /* CalendarDayCell.swift */,
+				D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */,
+				D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */,
 				D4B8C6F2261A3767009B470A /* ProfileViewController.swift */,
 			);
 			path = UI;
@@ -135,6 +143,7 @@
 			children = (
 				D4B8C6FC261A3805009B470A /* LoginViewModel.swift */,
 				D4B8C6FF261A3823009B470A /* CalendarViewModel.swift */,
+				D4C503C6261B6FB400F507E0 /* ScheduleViewModel.swift */,
 				D4B8C702261A3837009B470A /* ProfileViewModel.swift */,
 			);
 			path = ViewModels;
@@ -232,6 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4B8C70A261A38C0009B470A /* AsamAbsenseApp.swift in Sources */,
+				D4C503C7261B6FB400F507E0 /* ScheduleViewModel.swift in Sources */,
 				D4B8C6F3261A3767009B470A /* ProfileViewController.swift in Sources */,
 				D4C503BC261A8B5100F507E0 /* LoadableViewController.swift in Sources */,
 				D4B8C6F9261A37E5009B470A /* Absense.swift in Sources */,
@@ -240,6 +250,8 @@
 				D4B8C700261A3823009B470A /* CalendarViewModel.swift in Sources */,
 				D4B8C6D4261A3686009B470A /* AppDelegate.swift in Sources */,
 				D4B8C707261A3864009B470A /* UserManager.swift in Sources */,
+				D4C503CC261B745C00F507E0 /* ScheduleTitleCell.swift in Sources */,
+				D4C503C4261B624C00F507E0 /* ScheduleViewController.swift in Sources */,
 				D4B8C717261A54F0009B470A /* Date+Extensions.swift in Sources */,
 				D4B8C713261A4AFA009B470A /* StatisticsManager.swift in Sources */,
 				D4C503B9261A7A6A00F507E0 /* UIColor+Extensions.swift in Sources */,

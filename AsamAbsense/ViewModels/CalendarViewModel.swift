@@ -10,17 +10,7 @@ import Foundation
 protocol CalendarViewModelDelegate: AnyObject {
     func showLoading(_ isLoading: Bool)
     func showFetchedAbsenceData(_ absenceData: [Absense])
-}
-
-struct CalendarMonthData {
-    let month: Int
-    let year: Int
-    let days: Int
-    
-    var date: Date {
-        let components = DateComponents(year: year, month: month, day: days)
-        return Calendar.current.date(from: components)!
-    }
+    func showScheduleButton(_ isShown: Bool)
 }
 
 class CalendarViewModel {
@@ -45,6 +35,8 @@ class CalendarViewModel {
         daysDatasource.append(contentsOf: now.nextYear.monthDataLayout)
         return daysDatasource
     }()
+    private lazy var calendarDataItemCache: [IndexPath: CalendarCellItemData] = [:]
+    private lazy var selectedIndexPaths = Set<IndexPath>()
     lazy var todayIndexPath: IndexPath = {
         let daysFromStartOfYear = additionalDays + Date().dayIndex - 1
         let section = daysFromStartOfYear / 7
@@ -62,6 +54,7 @@ class CalendarViewModel {
     }
     
     func fetchAbsenseData() {
+        calendarDataItemCache = [:]
         delegate?.showLoading(true)
         absenceManager.fetchAbsenseData { [weak self] absenceData in
             DispatchQueue.main.async {
@@ -71,20 +64,77 @@ class CalendarViewModel {
         }
     }
     
-    func dataForIndexPath(_ indexPath: IndexPath) -> CalendarMonthData? {
+    func cellItemDataForIndexPath(_ indexPath: IndexPath) -> CalendarCellItemData {
+        if let cached = calendarDataItemCache[indexPath] {
+            return cached
+        }
         let dayIndex = (indexPath.section * 7) + indexPath.item + 1
         let additionalDays = daysDatasource[0].days
-        guard dayIndex > additionalDays else {
-            return nil
+        let dataItem: CalendarCellItemData
+        if dayIndex > additionalDays, let monthIndex = daysLayoutPrefixSum.firstIndex(where: { $0 >= dayIndex }) {
+            let previousMonthDaySum = daysLayoutPrefixSum[monthIndex-1]
+            let dayDiff = dayIndex - previousMonthDaySum
+            let day = dayDiff > 0 ? dayDiff : daysDatasource[monthIndex-1].days
+            let monthData = daysDatasource[monthIndex]
+            let cellItemDate = CalendarDate(year: monthData.year,
+                                            month: monthData.month,
+                                            day: day)
+            dataItem = CalendarCellItemData(type: .date(cellItemDate), isSelected: false)
+        } else {
+            dataItem = CalendarCellItemData(type: .empty, isSelected: false)
         }
-        guard let monthIndex = daysLayoutPrefixSum.firstIndex(where: { $0 >= dayIndex }) else {
-            return nil
+        calendarDataItemCache[indexPath] = dataItem
+        return dataItem
+    }
+    
+    func allowsSelectionAtIndexPath(_ indexPath: IndexPath) -> Bool {
+        let cellData = cellItemDataForIndexPath(indexPath)
+        switch cellData.type {
+        case .empty:
+            return false
+        case .date(let caledarDate):
+            guard caledarDate.date.isWeekday else {
+                return false
+            }
+            return !absenceManager.hasAbsenseAtDate(caledarDate.date)
         }
-        let previousMonthDaySum = daysLayoutPrefixSum[monthIndex-1]
-        let dayDiff = dayIndex - previousMonthDaySum
-        let day = dayDiff > 0 ? dayDiff : daysDatasource[monthIndex-1].days
-        let monthData = daysDatasource[monthIndex]
-        return CalendarMonthData(month: monthData.month, year: monthData.year, days: day)
+    }
+    
+    func toggleSelectionAtIndexPath(_ indexPath: IndexPath) {
+        var cellData = cellItemDataForIndexPath(indexPath)
+        cellData.isSelected.toggle()
+        let isEmpty = selectedIndexPaths.isEmpty
+        if cellData.isSelected {
+            selectedIndexPaths.insert(indexPath)
+        } else {
+            selectedIndexPaths.remove(indexPath)
+        }
+        calendarDataItemCache[indexPath] = cellData
+        if selectedIndexPaths.isEmpty != isEmpty {
+            delegate?.showScheduleButton(!selectedIndexPaths.isEmpty)
+        }
+    }
+    
+    func selectedCalendarDates() -> [CalendarDate] {
+        return selectedIndexPaths.compactMap {
+            switch cellItemDataForIndexPath($0).type {
+            case .date(let date):
+                return date
+            case .empty:
+                return nil
+            }
+        }
+    }
+    
+    func resetSelection() {
+        selectedIndexPaths = .init()
+        calendarDataItemCache.forEach {
+            if $0.value.isSelected {
+                var itemData = $0.value
+                itemData.isSelected = false
+                calendarDataItemCache[$0.key] = itemData
+            }
+        }
     }
 }
 

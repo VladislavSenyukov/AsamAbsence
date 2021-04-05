@@ -23,6 +23,10 @@ class AsamAbsenseApp {
         return CalendarViewModel(absenceManager: absenseManager)
     }
     
+    func makeScheduleModel() -> ScheduleViewModel {
+        return ScheduleViewModel(absenceManager: absenseManager)
+    }
+    
     func makeLoadingVC() -> UIViewController {
         return storyboard.instantiateViewController(withIdentifier: "LoadingViewController")
     }
@@ -33,6 +37,10 @@ class AsamAbsenseApp {
     
     func makeCalendarVC() -> CalendarViewController? {
         return storyboard.instantiateViewController(identifier: "CalendarViewController") as? CalendarViewController
+    }
+    
+    func makeScheduleVC() -> ScheduleViewController? {
+        return storyboard.instantiateViewController(identifier: "ScheduleViewController") as? ScheduleViewController
     }
     
     func makeProfileVC() -> ProfileViewController? {

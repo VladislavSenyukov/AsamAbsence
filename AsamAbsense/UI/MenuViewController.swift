@@ -17,10 +17,11 @@ class MenuViewController: LoadableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Asam Absense"
+        title = "Menu"
         navigationController?.navigationBar.barTintColor = .asamGreen
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
+        navigationController?.navigationBar.barStyle = .black
     }
 }
 
@@ -32,6 +33,7 @@ extension MenuViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MenuCell")!
         cell.textLabel?.textColor = .asamGrey
+        cell.textLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 18)
         cell.textLabel?.text = MenuOption.allCases[indexPath.row].rawValue.capitalized
         return cell
     }

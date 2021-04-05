@@ -59,9 +59,7 @@ private extension StatisticsManager {
     }
     
     func calculateUsedDaysForAbsenseData(_ absenseData: [Absense]) -> Int {
-        return absenseData.reduce(0) {
-            $0 + $1.intervals.reduce(0) { $0 + $1.normalizedToCurrentYear.dayCount }
-        }
+        return absenseData.reduce(0) { $0 + $1.dates.count }
     }
     
     func calculateRemainingDaysForUsedDays(_ usedDays: Int, totalDays: Int) -> Int {

@@ -13,9 +13,16 @@ private let formatter: DateFormatter = {
     return formatter
 }()
 
+struct CalendarCellViewData {
+    let type: CalendarCellItemData.CellType
+    let isSelected: Bool
+    let dayIndex: Int
+    let isToday: Bool
+}
+
 class CalendarDayCell: UICollectionViewCell {
     static let identifier = "CalendarDayCell"
-    var data: CalendarMonthData?
+    var data: CalendarCellViewData?
     
     @IBOutlet private weak var dayLabel: UILabel!
     @IBOutlet private weak var yearLabel: UILabel!
@@ -23,50 +30,56 @@ class CalendarDayCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        yearLabel.isHidden = true
-        isTodayView.isHidden = true
         isTodayView.backgroundColor = .asamGreen
+        contentView.clipsToBounds = true
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         isTodayView.layer.cornerRadius = isTodayView.frame.width / 2.0
+        contentView.layer.cornerRadius = 5
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        data = nil
-        isTodayView.isHidden = true
-        yearLabel.isHidden = true
-    }
-    
-    func configureWithData(_ data: CalendarMonthData?, isToday: Bool, dayIndex: Int) {
-        guard let data = data else {
-            dayLabel.text = ""
-            return
-        }
+    func configureWithData(_ data: CalendarCellViewData) {
         self.data = data
-        var dayText = data.days.description
-        if data.days == 1 || isToday {
-            dayText += " \(formatter.string(from: data.date))"
-            yearLabel.isHidden = false
-            yearLabel.text = data.year.description
-        } else {
+        switch data.type {
+        case .empty:
+            dayLabel.isHidden = true
             yearLabel.isHidden = true
-        }
-        if isToday {
-            isTodayView.isHidden = false
-            dayLabel.textColor = .white
-            yearLabel.textColor = .white
-        } else {
             isTodayView.isHidden = true
-            yearLabel.textColor = .lightGray
-            if dayIndex < 5 {
-                dayLabel.textColor = .asamGrey
-            } else {
-                dayLabel.textColor = .lightGray
+        case .date(let calendarDate):
+            dayLabel.isHidden = false
+            yearLabel.isHidden = true
+            isTodayView.isHidden = true
+            
+            let day = calendarDate.day
+            var dayText = day.description
+            if day == 1 || data.isToday || data.isSelected {
+                dayText += " \(formatter.string(from: calendarDate.date))"
+                yearLabel.isHidden = false
+                yearLabel.text = calendarDate.year.description
+            } else if day == 0 {
+                dayText = ""
             }
+            dayLabel.text = dayText
+            
+            if data.isToday || data.isSelected {
+                dayLabel.textColor = .white
+                yearLabel.textColor = .white
+            } else {
+                yearLabel.textColor = .lightGray
+                if data.dayIndex < 5 {
+                    dayLabel.textColor = .asamGrey
+                } else {
+                    dayLabel.textColor = .lightGray
+                }
+            }
+            isTodayView.isHidden = !data.isToday
         }
-        dayLabel.text = dayText
+        if data.isSelected {
+            contentView.backgroundColor = UIColor(hex: "#307030FF")
+        } else {
+            contentView.backgroundColor = .white
+        }
     }
 }
