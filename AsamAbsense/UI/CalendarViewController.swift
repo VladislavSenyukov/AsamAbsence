@@ -129,19 +129,23 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let absenseData = viewModel.absenseDataForIndexPath(indexPath) {
+            guard absenseData.dates.count > 1 else {
+                showEditForAbsense(absenseData)
+                return
+            }
+            
             let alert = UIAlertController(title: "Select action", message: nil, preferredStyle: .actionSheet)
-            let handler: (UIAlertAction) -> Void = { [weak alert, weak self] action in
-                guard let actionIndex = alert?.actions.firstIndex(of: action) else {
-                    return
-                }
-                if actionIndex == 0 {
+            let removeTitle = "Remove this day"
+            let editTitle = "Edit"
+            let handler: (UIAlertAction) -> Void = { [weak self] action in
+                if action.title == removeTitle {
                     self?.removeDayFromAbsense(absenseData, indexPath: indexPath)
-                } else if actionIndex == 1 {
+                } else if action.title == editTitle {
                     self?.showEditForAbsense(absenseData)
                 }
             }
-            alert.addAction(UIAlertAction(title: "Remove this day", style: .default, handler: handler))
-            alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: handler))
+            alert.addAction(UIAlertAction(title: removeTitle, style: .default, handler: handler))
+            alert.addAction(UIAlertAction(title: editTitle, style: .default, handler: handler))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
         } else {

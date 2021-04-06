@@ -15,6 +15,7 @@ protocol AbsenseManagerProtocol {
                        attachments: Set<URL>,
                        completion: @escaping (Absense) -> Void)
     func updateAbsense(_ absense: Absense, completion: @escaping () -> Void)
+    func removeAbsense(_ absense: Absense, completion: @escaping () -> Void)
 }
 
 class AbsenseManager: AbsenseManagerProtocol {
@@ -70,6 +71,20 @@ class AbsenseManager: AbsenseManagerProtocol {
             }
             var absenseData = self.absenseStorage[userId] ?? [:]
             absenseData[absense.id] = absense
+            self.absenseStorage[userId] = absenseData
+            completion()
+        }
+    }
+    
+    func removeAbsense(_ absense: Absense, completion: @escaping () -> Void) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + Constants.commonDelay) {
+            guard let userId = self.userManager.currentUser?.id else {
+                assertionFailure("User logged out!")
+                completion()
+                return
+            }
+            var absenseData = self.absenseStorage[userId] ?? [:]
+            absenseData[absense.id] = nil
             self.absenseStorage[userId] = absenseData
             completion()
         }

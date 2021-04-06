@@ -25,6 +25,7 @@ class ScheduleViewController: LoadableViewController {
     private lazy var viewModel = AsamAbsenseApp.shared.makeScheduleModel()
     private var isEdit = false
     @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet private weak var cancelButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,20 @@ class ScheduleViewController: LoadableViewController {
         
         let rightBarButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
         navigationItem.rightBarButtonItem = rightBarButton
+        cancelButton.isHidden = !isEdit
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        cancelButton.layer.cornerRadius = cancelButton.frame.height / 2.0
+        cancelButton.layer.masksToBounds = false
+        cancelButton.layer.shadowOffset = CGSize(width: 0, height: 0)
+        cancelButton.layer.shadowColor = UIColor.asamGrey.cgColor
+        cancelButton.layer.shadowOpacity = 0.5
+        cancelButton.layer.shadowRadius = 8
+        cancelButton.titleLabel?.numberOfLines = 1
+        cancelButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        cancelButton.titleLabel?.lineBreakMode = .byClipping
     }
     
     func updateScheduleWithDates(_ dates: [CalendarDate]) {
@@ -157,6 +172,19 @@ private extension ScheduleViewController {
         } else {
             viewModel.scheduleAbsense()
         }
+    }
+    
+    @IBAction func cancelTapped() {
+        let alert = UIAlertController(title: "Cancel absense",
+                                      message: "Are you sure you want to cancel this record?",
+                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: .default) { [weak self] _ in
+            self?.viewModel.cancelAbsense()
+        }
+        alert.addAction(okAction)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        alert.preferredAction = okAction
+        present(alert, animated: true, completion: nil)
     }
 }
 

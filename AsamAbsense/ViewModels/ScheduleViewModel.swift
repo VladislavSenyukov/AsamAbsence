@@ -97,6 +97,19 @@ class ScheduleViewModel {
             }
         }
     }
+    
+    func cancelAbsense() {
+        guard let absense = editingAbsense else {
+            return
+        }
+        delegate?.showLoading(true)
+        absenceManager.removeAbsense(absense) { [weak self] in
+            DispatchQueue.main.async {
+                self?.delegate?.showLoading(false)
+                self?.delegate?.showAbsenseUpdated()
+            }
+        }
+    }
 }
 
 private let formatter: DateFormatter = {

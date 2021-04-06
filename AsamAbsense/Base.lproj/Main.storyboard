@@ -405,6 +405,20 @@
                                     <outlet property="delegate" destination="8yS-pB-DP0" id="u2D-0R-vr8"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="gbL-K2-eKl">
+                                <rect key="frame" x="138.5" y="797" width="137" height="50"/>
+                                <color key="backgroundColor" red="0.64705882349999999" green="0.78823529410000004" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="30"/>
+                                <inset key="contentEdgeInsets" minX="20" minY="7" maxX="20" maxY="7"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="titleShadowColor" red="0.35294117650000001" green="0.35294117650000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelTapped" destination="8yS-pB-DP0" eventType="touchUpInside" id="aE0-ib-qET"/>
+                                    <action selector="scheduleTapped" destination="ojd-qJ-eVX" eventType="touchUpInside" id="a0v-Wi-yUA"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="zbN-AA-Tic"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -412,10 +426,13 @@
                             <constraint firstItem="zbN-AA-Tic" firstAttribute="trailing" secondItem="cv8-44-8gK" secondAttribute="trailing" id="0yT-h7-Mld"/>
                             <constraint firstItem="cv8-44-8gK" firstAttribute="top" secondItem="zbN-AA-Tic" secondAttribute="top" id="JXd-ue-ngs"/>
                             <constraint firstAttribute="bottom" secondItem="cv8-44-8gK" secondAttribute="bottom" id="Pbu-70-8bE"/>
+                            <constraint firstItem="gbL-K2-eKl" firstAttribute="centerX" secondItem="c4a-ID-BYm" secondAttribute="centerX" id="oOd-0h-Qsv"/>
                             <constraint firstItem="cv8-44-8gK" firstAttribute="leading" secondItem="zbN-AA-Tic" secondAttribute="leading" id="u7C-jM-XzO"/>
+                            <constraint firstItem="zbN-AA-Tic" firstAttribute="bottom" secondItem="gbL-K2-eKl" secondAttribute="bottom" constant="15" id="zQb-I7-l6o"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="cancelButton" destination="gbL-K2-eKl" id="f2U-A1-vI8"/>
                         <outlet property="tableView" destination="cv8-44-8gK" id="fxK-s2-Fqe"/>
                     </connections>
                 </viewController>
