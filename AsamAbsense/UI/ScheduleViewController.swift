@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 protocol ScheduleViewControllerDelegate: AnyObject {
     func didCreateAbsense()
@@ -62,30 +63,33 @@ extension ScheduleViewController: ScheduleViewModelDelegate {
 
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return ScheduleCellItemType.allCases.count
-        return 2
+        return ScheduleCellItemType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellType = ScheduleCellItemType.allCases[indexPath.row]
         switch cellType {
         case .dates:
-            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleTitleCell.cellIdentifier) as! ScheduleTitleCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleTitleCell.identifier) as! ScheduleTitleCell
             cell.configure(cellType.rawValue.capitalized, text: viewModel.datesString)
             return cell
         case .type:
-            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleTitleCell.cellIdentifier) as! ScheduleTitleCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleTitleCell.identifier) as! ScheduleTitleCell
             cell.configure(cellType.rawValue.capitalized, text: viewModel.absenseTitle)
             return cell
         case .comment:
-            return UITableViewCell()
+            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCommentCell.identifier) as! ScheduleCommentCell
+            cell.configure(cellType.rawValue.capitalized, comment: viewModel.comment)
+            return cell
         case .attachments:
-            return UITableViewCell()
+            let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleTitleCell.identifier) as! ScheduleTitleCell
+            cell.configure(cellType.rawValue.capitalized, text: viewModel.attachmentsString)
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return 60
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -107,9 +111,42 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
             }
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
-        case .attachments, .comment, .dates:
+        case .attachments:
+            let documentVC = UIDocumentPickerViewController(forOpeningContentTypes: [.content])
+            documentVC.delegate = self
+            present(documentVC, animated: true, completion: nil)
+        case .comment, .dates:
             break
         }
+    }
+}
+
+extension ScheduleViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController,
+                        didPickDocumentsAt urls: [URL]) {
+        guard let firstURL = urls.first else {
+            return
+        }
+        viewModel.addAttachment(firstURL)
+        tableView.reloadData()
+    }
+}
+
+extension ScheduleViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField,
+                   shouldChangeCharactersIn range: NSRange,
+                   replacementString string: String) -> Bool {
+        if let text = textField.text,
+           let textRange = Range(range, in: text) {
+           let updatedText = text.replacingCharacters(in: textRange, with: string)
+            viewModel.updateComment(updatedText)
+        }
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
 

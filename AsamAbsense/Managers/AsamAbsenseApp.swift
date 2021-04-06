@@ -27,6 +27,10 @@ class AsamAbsenseApp {
         return ScheduleViewModel(absenceManager: absenseManager)
     }
     
+    func makeProfileModel() -> ProfileViewModel {
+        return ProfileViewModel(statisticsManager: statisticsManager)
+    }
+    
     func makeLoadingVC() -> UIViewController {
         return storyboard.instantiateViewController(withIdentifier: "LoadingViewController")
     }

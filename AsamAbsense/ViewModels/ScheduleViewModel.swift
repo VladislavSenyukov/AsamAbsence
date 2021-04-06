@@ -31,6 +31,15 @@ class ScheduleViewModel {
         return scheduleData.type.title
     }
     
+    var comment: String? {
+        return scheduleData.comment
+    }
+    
+    var attachmentsString: String {
+        let string = scheduleData.attachments.map { $0.lastPathComponent }.joined(separator: ", ")
+        return string.isEmpty ? "Select" : string
+    }
+    
     init(absenceManager: AbsenseManagerProtocol) {
         self.absenceManager = absenceManager
     }
@@ -41,6 +50,14 @@ class ScheduleViewModel {
     
     func updateAbsenseType(_ type: AbsenseType) {
         scheduleData.type = type
+    }
+    
+    func updateComment(_ comment: String?) {
+        scheduleData.comment = comment
+    }
+    
+    func addAttachment(_ url: URL) {
+        scheduleData.attachments.insert(url)
     }
     
     func updateFromAbsense(_ absense: Absense) {

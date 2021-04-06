@@ -34,6 +34,8 @@
 		D4C503C4261B624C00F507E0 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */; };
 		D4C503C7261B6FB400F507E0 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503C6261B6FB400F507E0 /* ScheduleViewModel.swift */; };
 		D4C503CC261B745C00F507E0 /* ScheduleTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */; };
+		D4C603AD261BC119006AF1A7 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C603AC261BC119006AF1A7 /* ProfileCell.swift */; };
+		D4C603B0261BCC01006AF1A7 /* ScheduleCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C603AF261BCC01006AF1A7 /* ScheduleCommentCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +68,8 @@
 		D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		D4C503C6261B6FB400F507E0 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTitleCell.swift; sourceTree = "<group>"; };
+		D4C603AC261BC119006AF1A7 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
+		D4C603AF261BCC01006AF1A7 /* ScheduleCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleCommentCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +137,9 @@
 				D4C503BF261AB58000F507E0 /* CalendarDayCell.swift */,
 				D4C503C3261B624C00F507E0 /* ScheduleViewController.swift */,
 				D4C503CB261B745C00F507E0 /* ScheduleTitleCell.swift */,
+				D4C603AF261BCC01006AF1A7 /* ScheduleCommentCell.swift */,
 				D4B8C6F2261A3767009B470A /* ProfileViewController.swift */,
+				D4C603AC261BC119006AF1A7 /* ProfileCell.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -244,6 +250,7 @@
 				D4C503C7261B6FB400F507E0 /* ScheduleViewModel.swift in Sources */,
 				D4B8C6F3261A3767009B470A /* ProfileViewController.swift in Sources */,
 				D4C503BC261A8B5100F507E0 /* LoadableViewController.swift in Sources */,
+				D4C603B0261BCC01006AF1A7 /* ScheduleCommentCell.swift in Sources */,
 				D4B8C6F9261A37E5009B470A /* Absense.swift in Sources */,
 				D4B8C6F0261A3753009B470A /* CalendarViewController.swift in Sources */,
 				D4B8C6D8261A3686009B470A /* LoginViewController.swift in Sources */,
@@ -259,6 +266,7 @@
 				D4B8C6D6261A3686009B470A /* SceneDelegate.swift in Sources */,
 				D4C503C0261AB58000F507E0 /* CalendarDayCell.swift in Sources */,
 				D4B8C703261A3837009B470A /* ProfileViewModel.swift in Sources */,
+				D4C603AD261BC119006AF1A7 /* ProfileCell.swift in Sources */,
 				D4B8C6ED261A3728009B470A /* MenuViewController.swift in Sources */,
 				D4B8C70D261A3BFD009B470A /* Constants.swift in Sources */,
 				D4B8C710261A3E72009B470A /* AbsenseManager.swift in Sources */,

@@ -8,7 +8,7 @@
 import UIKit
 
 class ScheduleTitleCell: UITableViewCell {
-    static let cellIdentifier = "ScheduleTitleCell"
+    static let identifier = "ScheduleTitleCell"
     
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
